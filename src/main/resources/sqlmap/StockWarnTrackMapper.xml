@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.stock.dao.StockWarnTrackMapper">
+	<!-- 获取某营业部更新的最后时间 -->
+	<select id="selectMaxStockCzbData" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		select max(day_d) mday from stock_czb where
+		type_code=#{type}
+	</select>
+	<!-- 批量插入财政部操作个股 -->
+	<insert id="saveBatchStockCzb" parameterType="java.util.List">
+		INSERT INTO stock_czb
+		(code,day_d,buy_p,sell_p,type_code)VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.code},#{item.day_d},#{item.buy_p},#{item.sell_p},#{item.type_code})
+		</foreach>
+	</insert>
+	<!-- 更新个股信息 -->
+	<update id="updateStockContent" parameterType="com.authority.pojo.Criteria">
+		update
+		stock_content set
+		oldname=#{oldname},content=#{content},name=#{name},capital=#{capital}
+		where code=#{code}
+	</update>
+	<!-- 更新个股十大流通股东状态 -->
+	<update id="updateHolderState" parameterType="com.authority.pojo.Criteria">
+		update stock_ship
+		set ios=#{condition.state}
+	</update>
+	<!-- 获取最后一次更新年份 -->
+	<select id="getLastYear" resultType="java.lang.Integer">
+		select max(year) from
+		stock_incoming
+	</select>
+	<insert id="saveIncoming" parameterType="com.stock.pojo.StockIncoming">
+		insert into
+		stock_incoming(code,year,incoming,allincoming,sumincoming,capital,nprice)
+		values(#{code},#{year},#{incoming},#{allincoming},#{sumincoming},#{capital},#{nprice})
+	</insert>
+	<update id="updateStockRestricted" parameterType="com.stock.pojo.StockRestricted">
+		insert into stock_restricted(code,day_d,allcount,type,tov,toa)
+		values(#{code},#{day_d},#{allcount},#{type},#{tov},#{toa})
+		ON DUPLICATE KEY UPDATE
+		code=#{code},day_d=#{day_d},allcount=#{allcount},
+		type=#{type},tov=#{tov},toa=#{toa}
+	</update>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+		<!-- 
+	<plugins>
+		指定数据库分页方言Dialect, 其它方言:OracleDialect,SQLServerDialect,SybaseDialect,DB2Dialect,
+		PostgreSQLDialect,MySQLDialect,DerbyDialect,HSQLDialect
+		<plugin interceptor="com.authority.common.mybatis.OffsetLimitInterceptor">
+			<property name="dialectClass" value="com.authority.common.mybatis.dialect.OracleDialect"/>
+		</plugin>
+	</plugins>
+		-->
+	<mappers>
+	    <!-- 权限模块 -->
+		<mapper resource="sqlmap/common_SqlMap.xml" />
+		<mapper resource="sqlmap/BaseModulesMapper.xml" />
+		<mapper resource="sqlmap/BaseRoleModuleMapper.xml" />
+		<mapper resource="sqlmap/BaseRolesMapper.xml" />
+		<mapper resource="sqlmap/BaseUserRoleMapper.xml" />
+		<mapper resource="sqlmap/BaseUsersMapper.xml" />
+		<mapper resource="sqlmap/BaseFieldsMapper.xml" />
+		<!-- 股票模块 -->
+		<mapper resource="sqlmap/StockStatisticsMapper.xml" />
+		<mapper resource="sqlmap/StockCodeStatisticsMapper.xml" />
+		<mapper resource="sqlmap/StockWarnTrackMapper.xml" />
+		<mapper resource="sqlmap/StockContentMapper.xml" />
+		
+		<!-- 日志模块 -->
+		<mapper resource="sqlmap/LoggerEventMapper.xml" />
+		<!-- 任务模块 -->
+		<mapper resource="sqlmap/QuartzJobMapper.xml" />
+	</mappers>
+	<!-- 防止脚本注入
+	mysql: select * from t_user where name like concat('%',#name #,'%')    
+	oracle: select * from t_user where name like '%'||#name #||'%'   
+	SQL Server:select * from t_user where name like '%'+#name #+'% 
+	 -->
+</configuration>

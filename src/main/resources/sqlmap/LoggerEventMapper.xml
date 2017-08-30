@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.logsys.dao.LogSystemMapper">
+	<resultMap id="BaseResultMap" type="java.util.HashMap"/>
+	<sql id="Example_Where_Clause">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="condition.mapped_key != null and condition.mapped_value!=null">
+			    and mapped_key = #{condition.mapped_key}
+				 <![CDATA[and mapped_value LIKE concat('%',#{condition.mapped_value},'%')]]>
+			</if>
+			<if test="condition.startDate!=null and condition.endDate!=null">
+			    and timestmp BETWEEN #{condition.startDate} and #{condition.endDate}
+			</if>
+			<if test="condition.level_string!=null">
+			     <![CDATA[and level_string LIKE concat('%',#{condition.level_string},'%')]]>
+			</if>
+		</trim>
+	</sql>
+	<!-- 日志系统查询 -->
+	<select id="selectSystemLog" resultMap="BaseResultMap"
+		parameterType="com.authority.pojo.Criteria">
+		select le.*,lep.mapped_key,lep.mapped_value from logging_event_property lep JOIN logging_event le on le.event_id=lep.event_id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+		<include refid="common.Mysql_Pagination_Limit" />
+	</select>
+	<select id="countSystemLog" parameterType="com.authority.pojo.Criteria"
+		resultType="java.lang.Integer">
+		select count(*) from logging_event_property lep JOIN logging_event le on le.event_id=lep.event_id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+</mapper>
