@@ -9,7 +9,10 @@ import java.util.Date;
 @Entity
 @Table(name = "t_stock_shareholder_number")
 public class ShareholderNumber extends BaseEntity {
-    
+    /**
+     * 代码
+     */
+    private String code;
 	/**
 	 * 日期
 	 */
@@ -147,6 +150,14 @@ public class ShareholderNumber extends BaseEntity {
 
 	public void setUpdateAt(Date updateAt) {
 		this.updateAt = updateAt;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 }

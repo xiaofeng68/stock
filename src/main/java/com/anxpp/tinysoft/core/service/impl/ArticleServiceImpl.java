@@ -1,16 +1,17 @@
 package com.anxpp.tinysoft.core.service.impl;
 
-import com.anxpp.tinysoft.core.entity.Article;
-import com.anxpp.tinysoft.core.service.ArticleService;
-import com.anxpp.tinysoft.utils.ArticleSpider;
-import com.anxpp.tinysoft.utils.analyzer.impl.CsdnWeeklyDocumentAnalyzer;
+import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.anxpp.tinysoft.core.entity.Article;
+import com.anxpp.tinysoft.core.service.ArticleService;
+import com.anxpp.tinysoft.utils.ArticleSpider;
+import com.anxpp.tinysoft.utils.analyzer.impl.CsdnWeeklyDocumentAnalyzer;
 
 /**
  * 文章service实现
@@ -22,6 +23,8 @@ public class ArticleServiceImpl implements ArticleService {
     private String preUrl;
     @Resource
     private CsdnWeeklyDocumentAnalyzer csdnWeeklyDocumentAnalyzer;
+//    @Autowired
+//    private ArticleRepo articleRepo;
 
     /**
      * 根据期号获取文章列表
@@ -34,6 +37,7 @@ public class ArticleServiceImpl implements ArticleService {
     public List<Article> forWeekly(Integer stage) throws Exception {
         List<Article> articleList = ArticleSpider.forEntityList(preUrl + stage, csdnWeeklyDocumentAnalyzer, Article.class);
         articleList.forEach(article -> article.setStage(stage));
+//        return articleRepo.save(articleList);
         return articleList;
     }
 }
