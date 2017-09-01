@@ -1,12 +1,14 @@
 package com.anxpp.tinysoft.controller;
 
-import com.anxpp.tinysoft.core.entity.Article;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.kidinfor.capture.controller.ArticleController;
+import com.kidinfor.capture.core.entity.Article;
 
 import javax.annotation.Resource;
 import java.util.List;
