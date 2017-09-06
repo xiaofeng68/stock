@@ -127,6 +127,7 @@ public class StockServiceImpl implements StockService {
 	}
 	@Override
 	@Transactional
+	@Async("myTaskAsyncPool")
 	public void updatePrice(String code) throws Exception {
 		Response res = Jsoup.connect(price+code).timeout(50000).ignoreContentType(true).execute();
     	String body = res.body();
