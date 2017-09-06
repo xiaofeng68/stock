@@ -5,15 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.kidinfor.capture.core.entity.ShareholderNumber;
+import com.kidinfor.capture.core.entity.StockPrice;
 
 /**
- * 股东人数数据访问层
+ * 股票价格数据库访问层
  * @author yu_qhai
  *
  */
-public interface ShareholderNumberRepo extends JpaRepository<ShareholderNumber, Long> {
+public interface StockPriceRepo extends JpaRepository<StockPrice, Long> {
 	@Modifying
-    @Query(value = "truncate table t_stock_shareholder_number",nativeQuery=true)
+    @Query(value = "truncate table t_stock_price",nativeQuery=true)
     void clear();
 }

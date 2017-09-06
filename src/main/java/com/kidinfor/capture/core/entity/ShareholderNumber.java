@@ -15,46 +15,57 @@ public class ShareholderNumber extends BaseEntity {
     /**
      * 代码
      */
+	@Column(columnDefinition="char(8) COMMENT '代码'")
     private String code;
 	/**
 	 * 日期
 	 */
+	@Column(columnDefinition="char(10) COMMENT '日期'")
 	private String rq;
     /**
      * 股东人数
      */
+	@Column(columnDefinition="double COMMENT '股东人数'")
     private Double gdrs;
     /**
      * 较上期变化
      */
+	@Column(columnDefinition="double COMMENT '较上期变化'")
     private Double gdrs_jsqbh;
     /**
      * 人均流通股
      */
+	@Column(columnDefinition="double COMMENT '人均流通股'")
     private Double rjltg;
     /**
      * 较上期变化
      */
+	@Column(columnDefinition="double COMMENT '较上期变化'")
     private Double rjltg_jsqbh;
     /**
      * 筹码集中度
      */
+	@Column(columnDefinition="varchar(20) COMMENT '筹码集中度'")
     private String cmjzd;
     /**
      * 股价
      */
+	@Column(columnDefinition="double COMMENT '股价'")
     private Double gj;
     /**
      * 人均持股金额
      */
+	@Column(columnDefinition="double COMMENT '人均持股金额'")
     private Double rjcgje;
     /**
      * 前十大股东持股合计
      */
+	@Column(columnDefinition="double COMMENT '前十大股东持股合计'")
     private Double qsdgdcghj;
     /**
      * 前十大流通股东持股合计
      */
+	@Column(columnDefinition="double COMMENT '前十大流通股东持股合计'")
     private Double qsdltgdcghj;
     /**
      * 更新时间

@@ -32,7 +32,7 @@ public class ScheduleRefreshDatabase {
     @Resource(name = "scheduler")  
     private Scheduler scheduler;  
   
-    @Scheduled(fixedRate = 5000) // 每隔5s查库，并根据查询结果决定是否重新设置定时任务  
+    @Scheduled(fixedRate = 300000) // 每隔5分钟查库，并根据查询结果决定是否重新设置定时任务  
     public void scheduleUpdateCronTrigger() throws SchedulerException {  
         CronTrigger trigger = (CronTrigger) scheduler.getTrigger(cronTrigger.getKey());  
         String currentCron = trigger.getCronExpression();// 当前Trigger使用的  

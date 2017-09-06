@@ -17,10 +17,12 @@ public class TenLargestShareholder extends BaseEntity {
 	/**
 	 * 编号
 	 */
+	@Column(columnDefinition="char(8) COMMENT '代码'")
 	private String code;
 	/**
 	 * 日期
 	 */
+	@Column(columnDefinition="char(10) COMMENT '日期'")
 	private String rq;
     /**
      * 
@@ -30,26 +32,32 @@ public class TenLargestShareholder extends BaseEntity {
     /**
      * 股东名称
      */
+    @Column(columnDefinition="varchar(255) COMMENT '股东名称'")
     private String gdmc;
     /**
      * 股份类型
      */
+    @Column(columnDefinition="varchar(255) COMMENT '股份类型'")
     private String gflx;
     /**
      * 持股数
      */
+    @Column(columnDefinition="long COMMENT '持股数'")
     private Long cgs;
     /**
      * 占总股本比例
      */
+    @Column(columnDefinition="double COMMENT '占总股本比例'")
     private Double zltgbcgbl;
     /**
      * 增减
      */
+    @Column(columnDefinition="varchar(255) COMMENT '增减'")
     private String zj;
     /**
      * 变动比例
      */
+    @Column(columnDefinition="double COMMENT '变动比例'")
     private Double bdbl;
     
     /**

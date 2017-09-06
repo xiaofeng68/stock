@@ -1,5 +1,7 @@
 package com.kidinfor.capture.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kidinfor.capture.core.entity.StockCode;
 import com.kidinfor.capture.core.service.StockService;
 
 /**
@@ -28,7 +31,30 @@ public class StockController {
     
     @ResponseBody
     @GetMapping("/holder/update/{code}")
-    public void updateHolders(@PathVariable("code") String code) throws Exception {
-        stockService.updateHolders(code);
+    public String updateHolders(@PathVariable("code") String code) throws Exception {
+    	stockService.truncateHolders();
+    	List<StockCode> list = stockService.getCodes();
+    	for(StockCode c : list){
+    		try{
+    			stockService.updateHolders(c.getCode());
+    		}catch(Exception e){
+    			continue;
+    		}
+    	}
+    	return "{sucess:true}";
+    }
+    @ResponseBody
+    @GetMapping("/price/update/{code}")
+    public String updatePrice(@PathVariable("code") String code) throws Exception {
+    	stockService.truncatePrice();
+    	List<StockCode> list = stockService.getCodes();
+    	for(StockCode c : list){
+    		try{
+    			stockService.updatePrice(c.getCode());
+    		}catch(Exception e){
+    			continue;
+    		}
+    	}
+    	return "{sucess:true}";
     }
 }

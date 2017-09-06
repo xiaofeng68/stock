@@ -14,8 +14,11 @@ import java.util.Date;
 @Entity
 @Table(name = "t_stock_code")
 public class StockCode extends BaseEntity {
+	@Column(columnDefinition="char(8) COMMENT '代码'")
     private String code;
+	@Column(columnDefinition="varchar(255) COMMENT '名称'")
     private String name;
+	@Column(columnDefinition="char(6) COMMENT '代码'")
     private String scode;
 
     /**

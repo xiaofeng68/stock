@@ -8,15 +8,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kidinfor.capture.core.entity.ShareholderNumber;
 import com.kidinfor.capture.core.entity.StockCode;
+import com.kidinfor.capture.core.entity.StockPrice;
 import com.kidinfor.capture.core.entity.TenLargestShareholder;
 import com.kidinfor.capture.core.entity.TenldLargestShareholder;
 import com.kidinfor.capture.core.repo.ShareholderNumberRepo;
 import com.kidinfor.capture.core.repo.StockCodeRepo;
+import com.kidinfor.capture.core.repo.StockPriceRepo;
 import com.kidinfor.capture.core.repo.TenLargesShareholerRepo;
 import com.kidinfor.capture.core.repo.TenldLargesShareholerRepo;
 import com.kidinfor.capture.core.service.StockService;
@@ -30,6 +33,8 @@ public class StockServiceImpl implements StockService {
     private String sdgd;
     @Value("${stock.codes}")
     private String codes;
+    @Value("${stock.price}")
+    private String price;
     @Autowired
     private TenLargesShareholerRepo tenLargesShareholerRepo;
     @Autowired
@@ -38,11 +43,14 @@ public class StockServiceImpl implements StockService {
     private ShareholderNumberRepo shareholderNumberRepo;
     @Autowired
     private StockCodeRepo stockCodeRepo;
+    @Autowired
+    private StockPriceRepo stockPriceRepo;
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
+	@Async("myTaskAsyncPool")
 	public void updateHolders(String code) throws Exception {
-    	Response res = Jsoup.connect(sdgd+code).timeout(50000).ignoreContentType(true).execute();
+		Response res = Jsoup.connect(sdgd+code).timeout(50000).ignoreContentType(true).execute();
     	String body = res.body();
     	JSONObject json = JSONObject.fromObject(body);
     	List<ShareholderNumber> list = new ArrayList<>();
@@ -64,8 +72,8 @@ public class StockServiceImpl implements StockService {
     	});
     	shareholderNumberRepo.save(list);
     	List<TenLargestShareholder> tenList = new ArrayList<>();
-    	json.getJSONArray("sdgd").forEach(sdgd -> {
-    		JSONObject cache = JSONObject.fromObject(sdgd);
+    	json.getJSONArray("sdgd").forEach(gd -> {
+    		JSONObject cache = JSONObject.fromObject(gd);
     		cache.getJSONArray("sdgd").forEach(csdgd -> {
     			JSONObject ccache = JSONObject.fromObject(csdgd);
     			TenLargestShareholder ten = new TenLargestShareholder();
@@ -83,8 +91,8 @@ public class StockServiceImpl implements StockService {
     	});
     	tenLargesShareholerRepo.save(tenList);
     	List<TenldLargestShareholder> tenltList = new ArrayList<>();
-    	json.getJSONArray("sdltgd").forEach(sdgd -> {
-    		JSONObject cache = JSONObject.fromObject(sdgd);
+    	json.getJSONArray("sdltgd").forEach(gd -> {
+    		JSONObject cache = JSONObject.fromObject(gd);
     		cache.getJSONArray("sdltgd").forEach(csdgd -> {
     			JSONObject ccache = JSONObject.fromObject(csdgd);
     			TenldLargestShareholder ten = new TenldLargestShareholder();
@@ -117,6 +125,39 @@ public class StockServiceImpl implements StockService {
     	});
     	stockCodeRepo.save(codeList);
 	}
-
+	@Override
+	@Transactional
+	public void updatePrice(String code) throws Exception {
+		Response res = Jsoup.connect(price+code).timeout(50000).ignoreContentType(true).execute();
+    	String body = res.body();
+    	int start = body.indexOf("=")+1;
+    	int end = body.indexOf(";")-1;
+    	String [] datas = body.substring(start, end).split(",");
+    	StockPrice price = new StockPrice();
+    	price.setCode(code);
+    	price.setJk(Double.parseDouble(datas[1]));//今日开盘价
+    	price.setZs(Double.parseDouble(datas[2]));//昨日收盘价
+    	price.setPrice(Double.parseDouble(datas[3]));//当前价格
+    	price.setZg(Double.parseDouble(datas[4]));//今日最高价
+    	price.setZd(Double.parseDouble(datas[5]));//今日最低价
+    	price.setCjl(Long.parseLong(datas[8]));
+    	price.setCje(Double.parseDouble(datas[9]));
+    	price.setTime(datas[30]+" "+datas[31]);
+    	stockPriceRepo.save(price);
+	}
+	@Override
+	public List<StockCode> getCodes(){
+		return stockCodeRepo.findAll();
+	}
+	@Override
+	public void truncateHolders() {
+		shareholderNumberRepo.deleteAllInBatch();
+		tenLargesShareholerRepo.deleteAllInBatch();
+		tenldLargesShareholerRepo.deleteAllInBatch();
+	}
+	@Override
+	public void truncatePrice() {
+		stockPriceRepo.deleteAllInBatch();
+	}
     
 }
