@@ -134,6 +134,7 @@ public class StockServiceImpl implements StockService {
     	int start = body.indexOf("=")+1;
     	int end = body.indexOf(";")-1;
     	String [] datas = body.substring(start, end).split(",");
+    	if(datas.length==0) return;
     	StockPrice price = new StockPrice();
     	price.setCode(code);
     	price.setJk(Double.parseDouble(datas[1]));//今日开盘价
