@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -45,6 +45,7 @@ import net.sf.json.JSONObject;
 
 @Service
 public class StockServiceImpl implements StockService {
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	@Value("${stock.sdgd}")
 	private String sdgd;
 	@Value("${stock.codes}")
@@ -275,10 +276,13 @@ public class StockServiceImpl implements StockService {
 		return stockJijinCCRepo.findJJCodes();
 	}
 
+	@SuppressWarnings("resource")
 	@Override
+	@Transactional
+	@Async("myTaskAsyncPool")
 	public void updateJijinBD(String code) throws Exception {
 		String codeUrl = jijinbd + code + ".html";
-
+		try {
 		// 构造一个webClient 模拟Chrome 浏览器
 		WebClient webClient = new WebClient(BrowserVersion.CHROME);
 		
@@ -313,10 +317,13 @@ public class StockServiceImpl implements StockService {
 			}
 		}
 		stockJijinBDRepo.save(list);
+		}catch(Exception e) {
+			log.error("{}获取基金变动失败！",code);
+		}
 	}
 
 	@Override
 	public void truncateJijinBD() {
-		stockJijinBDRepo.clear();
+		stockJijinBDRepo.deleteAllInBatch();
 	}
 }
