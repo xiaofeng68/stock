@@ -88,10 +88,30 @@ public class StockController {
     @ResponseBody
     @GetMapping("/jijinBD/update")
     public String updateJijinBD() throws Exception {
-    	stockService.truncateJijinBD();
+//    	stockService.truncateJijinBD();
     	List<String> list = stockService.findJJCode();
     	for(String code : list) {
-    		stockService.updateJijinBD(code);
+			stockService.updateJijinBD(code);
+    	}
+    	return "{sucess:true}";
+    }
+    /**
+     * 板块走向
+     * @return
+     * @throws Exception
+     */
+    @ResponseBody
+    @GetMapping("/lieshou/update")
+    public String updateGainian() throws Exception {
+		stockService.updateGainian();
+    	return "{sucess:true}";
+    }
+    @ResponseBody
+    @GetMapping("/longtou/update")
+    public String updateLongtou() throws Exception {
+		List<String> list = stockService.findBKCode();
+		for(String code : list) {
+			stockService.updateLongtou(code);
     	}
     	return "{sucess:true}";
     }

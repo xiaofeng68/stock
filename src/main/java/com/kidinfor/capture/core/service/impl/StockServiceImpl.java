@@ -10,29 +10,28 @@ import java.util.List;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.kidinfor.capture.core.entity.ShareholderNumber;
+import com.kidinfor.capture.core.entity.StockBk;
 import com.kidinfor.capture.core.entity.StockCode;
 import com.kidinfor.capture.core.entity.StockJijinBD;
 import com.kidinfor.capture.core.entity.StockJijinCC;
+import com.kidinfor.capture.core.entity.StockLt;
 import com.kidinfor.capture.core.entity.StockPrice;
 import com.kidinfor.capture.core.entity.TenLargestShareholder;
 import com.kidinfor.capture.core.entity.TenldLargestShareholder;
 import com.kidinfor.capture.core.repo.ShareholderNumberRepo;
+import com.kidinfor.capture.core.repo.StockBkRepo;
 import com.kidinfor.capture.core.repo.StockCodeRepo;
 import com.kidinfor.capture.core.repo.StockJijinBDRepo;
 import com.kidinfor.capture.core.repo.StockJijinCCRepo;
+import com.kidinfor.capture.core.repo.StockLtRepo;
 import com.kidinfor.capture.core.repo.StockPriceRepo;
 import com.kidinfor.capture.core.repo.TenLargesShareholerRepo;
 import com.kidinfor.capture.core.repo.TenldLargesShareholerRepo;
@@ -45,7 +44,6 @@ import net.sf.json.JSONObject;
 
 @Service
 public class StockServiceImpl implements StockService {
-	private Logger log = LoggerFactory.getLogger(this.getClass());
 	@Value("${stock.sdgd}")
 	private String sdgd;
 	@Value("${stock.codes}")
@@ -56,6 +54,10 @@ public class StockServiceImpl implements StockService {
 	private String jijincc;
 	@Value("${stock.jijinbd}")
 	private String jijinbd;
+	@Value("${stock.redian}")
+	private String redian;
+	@Value("${stock.lingzhang}")
+	private String lingzhang;
 
 	@Autowired
 	private TenLargesShareholerRepo tenLargesShareholerRepo;
@@ -71,6 +73,10 @@ public class StockServiceImpl implements StockService {
 	private StockJijinCCRepo stockJijinCCRepo;
 	@Autowired
 	private StockJijinBDRepo stockJijinBDRepo;
+	@Autowired
+	private StockBkRepo stockBkRepo;
+	@Autowired
+	private StockLtRepo stockLtRepo;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -242,8 +248,9 @@ public class StockServiceImpl implements StockService {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(maxDate);
 		calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 3);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
 		Date time = DateUtil.getLastDayOfQuarter(calendar.getTime());
-
+		
 		String date = df.format(time);
 		Response res = Jsoup.connect(jijincc + date).timeout(50000).ignoreContentType(true).execute();
 		String body = res.body();
@@ -276,54 +283,112 @@ public class StockServiceImpl implements StockService {
 		return stockJijinCCRepo.findJJCodes();
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	@Transactional
 	@Async("myTaskAsyncPool")
 	public void updateJijinBD(String code) throws Exception {
-		String codeUrl = jijinbd + code + ".html";
-		try {
-		// 构造一个webClient 模拟Chrome 浏览器
-		WebClient webClient = new WebClient(BrowserVersion.CHROME);
-		
-		// 支持JavaScript
-		webClient.getOptions().setJavaScriptEnabled(true);
-		webClient.getOptions().setCssEnabled(false);
-		webClient.getOptions().setActiveXNative(false);
-		webClient.getOptions().setCssEnabled(false);
-		webClient.getOptions().setThrowExceptionOnScriptError(false);
-		webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-		webClient.getOptions().setTimeout(5000);
-		HtmlPage rootPage = webClient.getPage(codeUrl);
-		// 设置一个运行JavaScript的时间
-		webClient.waitForBackgroundJavaScript(5000);
-		String html = rootPage.asXml();
-		Document document = Jsoup.parse(html);
-		Elements trs = document.body().getElementsByClass("tab1").select("tr");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-M-d");
+		Date maxDate = stockJijinBDRepo.findMaxDate(code);
+		if (maxDate == null) {
+			maxDate = df.parse("2011-6-30");
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(maxDate);
+		calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 3);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		Date time = DateUtil.getLastDayOfQuarter(calendar.getTime());
+		String date = df.format(time);
+		String codeUrl = jijinbd.replace("_code", code).replace("_fd", date);
+		Response res = Jsoup.connect(codeUrl).timeout(50000).ignoreContentType(true).execute();
+		String body = res.body();
+		JSONArray array = JSONArray.fromObject(body);
 		List<StockJijinBD> list = new ArrayList<StockJijinBD>();
-		for (int i = 0,k=trs.size(); i < k; i++) {
-			Elements tds = trs.get(i).select("td");
-			if(tds.size()>0) {
-				StockJijinBD bd = new StockJijinBD();
-				bd.setCode(code);
-				bd.setTime(tds.get(1).text());
-				bd.setShareHDNum(10E4*Double.parseDouble(tds.get(2).text()));
-				bd.setvPosition(10E8*Double.parseDouble(tds.get(3).text()));
-				bd.setTabRate(Double.parseDouble(tds.get(4).text()));
-				bd.setlTZB(Double.parseDouble(tds.get(5).text()));
-				bd.setCgzj(10E4*Double.parseDouble(tds.get(6).text()));
-				bd.setCgzjd(Double.parseDouble(tds.get(7).text()));
-				list.add(bd);
-			}
+		for (Object data : array) {
+			JSONObject jsonObj = (JSONObject) data;
+			StockJijinBD jijinCC = new StockJijinBD();
+			jijinCC.setCode(jsonObj.getString("SCode"));
+			jijinCC.setShareHDNum(jsonObj.getDouble("ShareHDNum"));
+			jijinCC.setVPosition(jsonObj.getDouble("Vposition"));
+			jijinCC.setTabRate(jsonObj.getDouble("TabRate"));
+			jijinCC.setSHName(jsonObj.getString("SHName"));
+			jijinCC.setSHCode(jsonObj.getString("SHCode"));
+			jijinCC.setType(jsonObj.getString("Type"));
+			jijinCC.setBuyState(jsonObj.getString("BuyState"));
+			jijinCC.setTime(time);
+			list.add(jijinCC);
 		}
-		stockJijinBDRepo.save(list);
-		}catch(Exception e) {
-			log.error("{}获取基金变动失败！",code);
-		}
+		if (list.size() > 0)
+			stockJijinBDRepo.save(list);
 	}
 
 	@Override
 	public void truncateJijinBD() {
 		stockJijinBDRepo.deleteAllInBatch();
 	}
+
+	@Override
+	public void updateGainian() throws Exception {
+		stockBkRepo.deleteByUpdateAt(new Date());
+		Response res = Jsoup.connect(redian+Math.random()).timeout(50000).ignoreContentType(true).execute();
+		String body = res.body();
+		String datas = body.substring("var BKCache=[".length(), body.length()-1);
+		String[] arr = datas.split("\"");
+		List<StockBk> list = new ArrayList<StockBk>();
+		for(int i=0,j=arr.length;i<j;i++) {
+			String str = arr[i];
+			if(StringUtils.isEmpty(str) ||",".equals(str)) continue;
+			String[] bkArr = str.split(",");
+			StockBk bk = new StockBk();
+			bk.setCode(bkArr[1]);
+			bk.setName(bkArr[2]);
+			bk.setUd(Double.parseDouble(bkArr[3]));
+			bk.setMarket(Double.parseDouble(bkArr[4]));
+			bk.setRate(Double.parseDouble(bkArr[5]));
+			bk.setSeq(i);
+			String js = bkArr[6];
+			String[] jsArr = js.split("\\|");
+			bk.setUpnum(Integer.parseInt(jsArr[0]));
+			bk.setDownnum(Integer.parseInt(jsArr[2]));
+			list.add(bk);
+		}
+		stockBkRepo.save(list);
+	}
+	@Override
+	@Transactional
+	@Async("myTaskAsyncPool")
+	public void updateLongtou(String code) throws Exception {
+		stockLtRepo.deleteByUpdateAt(new Date());
+		Response res = Jsoup.connect(lingzhang+Math.random()).timeout(50000).ignoreContentType(true).execute();
+		String body = res.body();
+		String datas = body.substring(body.indexOf("[")+1, body.indexOf("]"));
+		String[] arr = datas.split("\"");
+		List<StockLt> list = new ArrayList<StockLt>();
+		for(int i=0,j=arr.length;i<j;i++) {
+			String str = arr[i];
+			if(StringUtils.isEmpty(str) ||",".equals(str)) continue;
+			String[] bkArr = str.split(",");
+			StockLt bk = new StockLt();
+			bk.setCode(bkArr[1]);
+			bk.setName(bkArr[2]);
+			bk.setPrice(Double.parseDouble(bkArr[3]));//最新价
+			bk.setUd(Double.parseDouble(bkArr[4]));//涨跌额
+			bk.setUdrate(bkArr[5]);
+			bk.setCgl(Integer.parseInt(bkArr[7]));
+			bk.setCge(Double.parseDouble(bkArr[8]));
+			bk.setLastDay(Double.parseDouble(bkArr[9]));
+			bk.setOpen(Double.parseDouble(bkArr[10]));
+			bk.setHeigh(Double.parseDouble(bkArr[11]));
+			bk.setLow(Double.parseDouble(bkArr[12]));
+			bk.setSeq(i);
+			list.add(bk);
+		}
+		stockLtRepo.save(list);
+	}
+	
+	@Override
+	public List<String> findBKCode() {
+		return stockBkRepo.findCodes();
+	}
+
+	
 }

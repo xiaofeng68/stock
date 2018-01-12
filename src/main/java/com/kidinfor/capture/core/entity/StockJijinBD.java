@@ -16,21 +16,20 @@ import java.util.Date;
 public class StockJijinBD extends BaseEntity {
 	@Column(columnDefinition="char(8) COMMENT '代码'")
     private String code;
+	@Column(columnDefinition="varchar(100) COMMENT '基金名称'")
+	private String sHName;
+	@Column(columnDefinition="varchar(10) COMMENT '基金编号'")
+	private String sHCode;
+	/**
+	 * 基金类型
+	 */
+	@Column(columnDefinition="varchar(10) COMMENT '基金类型'")
+	private String type;
     /**
      * 持股数量
      */
     @Column(columnDefinition="double COMMENT '持股数量'")
     private Double shareHDNum;
-    /**
-     * 持股增减
-     */
-    @Column(columnDefinition="double COMMENT '增减幅度'")
-    private Double cgzj;
-    /**
-     * 增减幅度
-     */
-    @Column(columnDefinition="double COMMENT '增减幅度'")
-    private Double cgzjd;
     /**
      * 持股市值
      */
@@ -42,13 +41,13 @@ public class StockJijinBD extends BaseEntity {
     @Column(columnDefinition="double COMMENT '占总股本比例'")
     private Double tabRate;
     /**
-     * 占流通股比例
+     * 购买类型
      */
-    @Column(columnDefinition="double COMMENT '占流通股比例'")
-    private Double lTZB;
+    @Column(columnDefinition="varchar(10) COMMENT '占流通股比例'")
+    private String buyState;
     
     @Column(columnDefinition="date COMMENT '数据日期'")
-    private String time;
+    private Date time;
     /**
      * 更新时间
      */
@@ -78,36 +77,12 @@ public class StockJijinBD extends BaseEntity {
 		this.shareHDNum = shareHDNum;
 	}
 
-	public Double getCgzj() {
-		return cgzj;
-	}
-
-	public void setCgzj(Double cgzj) {
-		this.cgzj = cgzj;
-	}
-
-	public Double getCgzjd() {
-		return cgzjd;
-	}
-
-	public void setCgzjd(Double cgzjd) {
-		this.cgzjd = cgzjd;
-	}
-
-	public Double getvPosition() {
+	public Double getVPosition() {
 		return vPosition;
 	}
 
-	public void setvPosition(Double vPosition) {
+	public void setVPosition(Double vPosition) {
 		this.vPosition = vPosition;
-	}
-
-	public Double getlTZB() {
-		return lTZB;
-	}
-
-	public void setlTZB(Double lTZB) {
-		this.lTZB = lTZB;
 	}
 
 	public Double getTabRate() {
@@ -118,19 +93,35 @@ public class StockJijinBD extends BaseEntity {
 		this.tabRate = tabRate;
 	}
 
-	public Double getLTZB() {
-		return lTZB;
+	public String getSHName() {
+		return sHName;
 	}
 
-	public void setLTZB(Double lTZB) {
-		this.lTZB = lTZB;
+	public void setSHName(String sHName) {
+		this.sHName = sHName;
 	}
 
-	public String getTime() {
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getBuyState() {
+		return buyState;
+	}
+
+	public void setBuyState(String buyState) {
+		this.buyState = buyState;
+	}
+
+	public Date getTime() {
 		return time;
 	}
 
-	public void setTime(String time) {
+	public void setTime(Date time) {
 		this.time = time;
 	}
 
@@ -140,5 +131,13 @@ public class StockJijinBD extends BaseEntity {
 
 	public void setUpdateAt(Date updateAt) {
 		this.updateAt = updateAt;
+	}
+
+	public String getSHCode() {
+		return sHCode;
+	}
+
+	public void setSHCode(String sHCode) {
+		this.sHCode = sHCode;
 	}
 }

@@ -18,6 +18,11 @@ public interface StockService {
 	 */
 	List<String> findJJCode();
 	/**
+	 * 获取板块编号
+	 * @return
+	 */
+	List<String> findBKCode();
+	/**
 	 * 获取个股基金变动
 	 */
 	void updateJijinBD(String code) throws Exception;
@@ -25,6 +30,11 @@ public interface StockService {
 	 * 基金持仓
 	 */
 	void updateJijinCC() throws Exception;
+	/**
+	 * 概念更新（主体猎手）
+	 * @throws Exception
+	 */
+	void updateGainian() throws Exception;
 	/**
 	 * 数据抓取
 	 */
@@ -44,6 +54,11 @@ public interface StockService {
 	 * 获取所属板块
 	 */
 	void updateType(String code,String scode) throws Exception;
+	
+	/**
+	 * 更新板块龙头
+	 */
+	void updateLongtou(String code)throws Exception;
 	/**
 	 * 获取所有编码
 	 * @return
