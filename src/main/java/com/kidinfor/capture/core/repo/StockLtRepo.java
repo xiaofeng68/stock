@@ -22,6 +22,6 @@ public interface StockLtRepo extends JpaRepository<StockLt, Long> {
 	 */
 	@Modifying
 	@Transactional
-	@Query("delete from StockBk o where o.updateAt = ?1 ")
+	@Query("delete from StockLt o where o.updateAt = ?1 ")
 	void deleteByUpdateAt(Date date);
 }
