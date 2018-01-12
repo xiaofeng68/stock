@@ -14,6 +14,8 @@ import java.util.Date;
 @Entity
 @Table(name = "t_stock_lt")
 public class StockLt extends BaseEntity {
+	@Column(columnDefinition="char(8) COMMENT '板块'")
+    private String bk;
 	@Column(columnDefinition="char(8) COMMENT '编号'")
     private String code;
     /**
@@ -42,7 +44,7 @@ public class StockLt extends BaseEntity {
     /**
      * 涨跌幅
      */
-    @Column(columnDefinition="double COMMENT '涨跌幅'")
+    @Column(columnDefinition="varchar(10) COMMENT '涨跌幅'")
     private String udrate;
     /**
      * 成交额
@@ -174,6 +176,14 @@ public class StockLt extends BaseEntity {
 
 	public void setLastDay(Double lastDay) {
 		this.lastDay = lastDay;
+	}
+
+	public String getBk() {
+		return bk;
+	}
+
+	public void setBk(String bk) {
+		this.bk = bk;
 	}
 
 }

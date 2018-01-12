@@ -368,6 +368,7 @@ public class StockServiceImpl implements StockService {
 			if(StringUtils.isEmpty(str) ||",".equals(str)) continue;
 			String[] bkArr = str.split(",");
 			StockLt bk = new StockLt();
+			bk.setBk(code);
 			bk.setCode(bkArr[1]);
 			bk.setName(bkArr[2]);
 			bk.setPrice(Double.parseDouble(bkArr[3]));//最新价
