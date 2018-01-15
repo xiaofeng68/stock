@@ -1,5 +1,6 @@
 package com.kidinfor.capture.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -109,6 +110,7 @@ public class StockController {
     @ResponseBody
     @GetMapping("/longtou/update")
     public String updateLongtou() throws Exception {
+    	stockService.truncateLongtou(new Date());
 		List<String> list = stockService.findBKCode();
 		for(String code : list) {
 			stockService.updateLongtou(code);

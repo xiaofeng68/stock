@@ -1,5 +1,6 @@
 package com.kidinfor.capture.core.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.kidinfor.capture.core.entity.StockCode;
@@ -12,6 +13,7 @@ public interface StockService {
 	void truncatePrice();
 	void truncateHolders();
 	void truncateJijinBD();
+	void truncateLongtou(Date date);
 	/**
 	 * 获取基金持仓的个股
 	 * @return

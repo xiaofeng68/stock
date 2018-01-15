@@ -334,8 +334,8 @@ public class StockServiceImpl implements StockService {
 		String datas = body.substring("var BKCache=[".length(), body.length()-1);
 		String[] arr = datas.split("\"");
 		List<StockBk> list = new ArrayList<StockBk>();
-		for(int i=0,j=arr.length;i<j;i++) {
-			String str = arr[i];
+		int i = 1;
+		for(String str : arr) {
 			if(StringUtils.isEmpty(str) ||",".equals(str)) continue;
 			String[] bkArr = str.split(",");
 			StockBk bk = new StockBk();
@@ -350,6 +350,7 @@ public class StockServiceImpl implements StockService {
 			bk.setUpnum(Integer.parseInt(jsArr[0]));
 			bk.setDownnum(Integer.parseInt(jsArr[2]));
 			list.add(bk);
+			i++;
 		}
 		stockBkRepo.save(list);
 	}
@@ -357,14 +358,14 @@ public class StockServiceImpl implements StockService {
 	@Transactional
 	@Async("myTaskAsyncPool")
 	public void updateLongtou(String code) throws Exception {
-		stockLtRepo.deleteByUpdateAt(new Date());
+		lingzhang = lingzhang.replace("_BK", code);
 		Response res = Jsoup.connect(lingzhang+Math.random()).timeout(50000).ignoreContentType(true).execute();
 		String body = res.body();
 		String datas = body.substring(body.indexOf("[")+1, body.indexOf("]"));
 		String[] arr = datas.split("\"");
 		List<StockLt> list = new ArrayList<StockLt>();
-		for(int i=0,j=arr.length;i<j;i++) {
-			String str = arr[i];
+		int i=1;
+		for(String str : arr) {
 			if(StringUtils.isEmpty(str) ||",".equals(str)) continue;
 			String[] bkArr = str.split(",");
 			StockLt bk = new StockLt();
@@ -382,6 +383,7 @@ public class StockServiceImpl implements StockService {
 			bk.setLow(Double.parseDouble(bkArr[12]));
 			bk.setSeq(i);
 			list.add(bk);
+			i++;
 		}
 		stockLtRepo.save(list);
 	}
@@ -391,5 +393,9 @@ public class StockServiceImpl implements StockService {
 		return stockBkRepo.findCodes();
 	}
 
+	@Override
+	public void truncateLongtou(Date date) {
+		stockLtRepo.deleteByUpdateAt(date);
+	}
 	
 }

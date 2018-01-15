@@ -37,7 +37,7 @@ public class QuartzConfigration {
          * sayHello为需要执行的方法 
          * 通过这几个配置，告诉JobDetailFactoryBean我们需要执行定时执行ScheduleTask类中的sayHello方法 
          */  
-        jobDetail.setTargetMethod("sayHello");  
+        jobDetail.setTargetMethod("run");  
         return jobDetail;  
     }  
       
