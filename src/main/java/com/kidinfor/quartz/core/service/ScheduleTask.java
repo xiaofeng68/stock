@@ -26,15 +26,8 @@ public class ScheduleTask {
 			cal.setTime(now);
 			/**周六周天不执行*/
 			if(cal.get(Calendar.DAY_OF_MONTH)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_MONTH)==Calendar.SUNDAY) return;
-			/**9:35 至 15:40 才更新*/
-			cal.set(Calendar.HOUR_OF_DAY, 9);
-			cal.set(Calendar.MILLISECOND, 35);
-			cal.set(Calendar.SECOND, 0);
-			Date start = cal.getTime();
-			cal.set(Calendar.HOUR_OF_DAY, 15);
-			cal.set(Calendar.MILLISECOND, 40);
-			Date end = cal.getTime();
-			if(now.before(start) || now.after(end)) return;
+			/**9:35  至 11:40    13:05至15:40 才更新*/
+			if(betweenTime(now, cal)) return;
 			
 			stockService.updateGainian();
 			stockService.truncateLongtou(now);
@@ -45,5 +38,25 @@ public class ScheduleTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private boolean betweenTime(Date now, Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 9);
+		cal.set(Calendar.MILLISECOND, 35);
+		cal.set(Calendar.SECOND, 0);
+		Date start = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 11);
+		cal.set(Calendar.MILLISECOND, 40);
+		Date end = cal.getTime();
+		if(now.before(start) || now.after(end)) return true;
+		cal.set(Calendar.HOUR_OF_DAY, 13);
+		cal.set(Calendar.MILLISECOND, 05);
+		cal.set(Calendar.SECOND, 0);
+		start = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 15);
+		cal.set(Calendar.MILLISECOND, 40);
+		end = cal.getTime();
+		if(now.before(start) || now.after(end)) return true;
+		return false;
 	}
 }

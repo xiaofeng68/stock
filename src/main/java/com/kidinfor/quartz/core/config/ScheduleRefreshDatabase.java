@@ -4,7 +4,6 @@ import javax.annotation.Resource;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,6 @@ import com.kidinfor.quartz.core.repo.ConfigRepo;
 public class ScheduleRefreshDatabase {  
     @Autowired  
     private ConfigRepo repository;  
-  
-    @Resource(name = "jobDetail")  
-    private JobDetail jobDetail;  
   
     @Resource(name = "jobTrigger")  
     private CronTrigger cronTrigger;  
