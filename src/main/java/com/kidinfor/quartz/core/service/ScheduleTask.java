@@ -31,7 +31,7 @@ public class ScheduleTask {
 			
 			stockService.updateGainian();
 			stockService.truncateLongtou(now);
-			List<String> list = stockService.findBKCode();
+			List<String> list = stockService.findBKCode(now);
 			for (String code : list) {
 				stockService.updateLongtou(code);
 			}

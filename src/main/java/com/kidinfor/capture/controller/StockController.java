@@ -110,8 +110,9 @@ public class StockController {
     @ResponseBody
     @GetMapping("/longtou/update")
     public String updateLongtou() throws Exception {
-    	stockService.truncateLongtou(new Date());
-		List<String> list = stockService.findBKCode();
+    	Date date = new Date();
+    	stockService.truncateLongtou(date);
+		List<String> list = stockService.findBKCode(date);
 		for(String code : list) {
 			stockService.updateLongtou(code);
     	}

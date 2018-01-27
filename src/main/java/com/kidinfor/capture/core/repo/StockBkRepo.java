@@ -17,8 +17,8 @@ import com.kidinfor.capture.core.entity.StockBk;
  *
  */
 public interface StockBkRepo extends JpaRepository<StockBk, Long> {
-	@Query("select code from StockBk group by code")
-	List<String> findCodes();
+	@Query("select code from StockBk o where o.updateAt = ?1  order by seq")
+	List<String> findCodes(Date date);
 	@Modifying
 	@Transactional
 	@Query("delete from StockBk o where o.updateAt = ?1 ")

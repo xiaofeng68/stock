@@ -358,14 +358,16 @@ public class StockServiceImpl implements StockService {
 	@Transactional
 	@Async("myTaskAsyncPool")
 	public void updateLongtou(String code) throws Exception {
-		lingzhang = lingzhang.replace("_BK", code);
-		Response res = Jsoup.connect(lingzhang+Math.random()).timeout(50000).ignoreContentType(true).execute();
+		String url = lingzhang.replace("_BK", code);
+		Response res = Jsoup.connect(url+Math.random()).timeout(50000).ignoreContentType(true).execute();
 		String body = res.body();
 		String datas = body.substring(body.indexOf("[")+1, body.indexOf("]"));
 		String[] arr = datas.split("\"");
 		List<StockLt> list = new ArrayList<StockLt>();
 		int i=1;
 		for(String str : arr) {
+			try {//去除停牌的股票
+			if(i>3) break;
 			if(StringUtils.isEmpty(str) ||",".equals(str)) continue;
 			String[] bkArr = str.split(",");
 			StockLt bk = new StockLt();
@@ -384,13 +386,14 @@ public class StockServiceImpl implements StockService {
 			bk.setSeq(i);
 			list.add(bk);
 			i++;
+			}catch(Exception e) {}
 		}
 		stockLtRepo.save(list);
 	}
 	
 	@Override
-	public List<String> findBKCode() {
-		return stockBkRepo.findCodes();
+	public List<String> findBKCode(Date date) {
+		return stockBkRepo.findCodes(date);
 	}
 
 	@Override

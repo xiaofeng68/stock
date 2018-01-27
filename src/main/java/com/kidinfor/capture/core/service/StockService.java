@@ -23,7 +23,7 @@ public interface StockService {
 	 * 获取板块编号
 	 * @return
 	 */
-	List<String> findBKCode();
+	List<String> findBKCode(Date date);
 	/**
 	 * 获取个股基金变动
 	 */
