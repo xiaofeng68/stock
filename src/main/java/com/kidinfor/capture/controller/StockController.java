@@ -31,6 +31,7 @@ public class StockController {
     @ResponseBody
     @GetMapping("/code/update")
     public void updateCodes() throws Exception {
+        stockService.truncateCodes();
         stockService.updateCodes();
     }
     
@@ -121,16 +122,16 @@ public class StockController {
     @ResponseBody
     @GetMapping("/type/update/{code}")
     public String updateType(@PathVariable("code") String code) throws Exception {
-//    	stockService.truncatePrice();
-//    	List<StockCode> list = stockService.getCodes();
-//    	for(StockCode c : list){
-//    		try{
-    			stockService.updateType("sz002068","002068");
-//    		}catch(Exception e){
-//    			continue;
-//    		}
-//    	}
-    	return "{sucess:true}";
+    	/*stockService.truncatePrice();
+    	List<StockCode> list = stockService.getCodes();
+    	for(StockCode c : list){
+    		try{
+    			stockService.updateType(c.getCode(),c.getScode());
+    		}catch(Exception e){
+    			continue;
+    		}
+    	}*/
+    	return "{sucess:true,msg:'暂无实现'}";
     }
     
 }

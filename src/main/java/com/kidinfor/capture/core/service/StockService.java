@@ -10,6 +10,7 @@ import com.kidinfor.capture.core.entity.StockCode;
  *
  */
 public interface StockService {
+    void truncateCodes();
 	void truncatePrice();
 	void truncateHolders();
 	void truncateJijinBD();

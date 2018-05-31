@@ -197,6 +197,11 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
+    public void truncateCodes() {
+	    stockCodeRepo.deleteAllInBatch();
+    }
+
+    @Override
 	public void truncatePrice() {
 		stockPriceRepo.deleteAllInBatch();
 	}
@@ -400,5 +405,6 @@ public class StockServiceImpl implements StockService {
 	public void truncateLongtou(Date date) {
 		stockLtRepo.deleteByUpdateAt(date);
 	}
+	
 	
 }
